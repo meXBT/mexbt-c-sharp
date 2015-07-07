@@ -288,16 +288,13 @@ namespace Mexbt.Api
 		private static HttpClient PRIVATE_CLIENT = Common.getClient("https://private-api.mexbt.com/v1/");
 
 		public AuthData Credentials { get; }
-		public bool     IsSandbox   { get; }
 
 		private HttpClient client;
 
-		public Account (AuthData authData, bool isSandbox = true)
+		public Account (AuthData authData)
 		{
 			Credentials = authData;
-			IsSandbox   = isSandbox;
-
-			client = isSandbox ? SANDBOX_CLIENT : PRIVATE_CLIENT;
+			client      = Credentials.IsSandbox ? SANDBOX_CLIENT : PRIVATE_CLIENT;
 		}
 
 		public async Task<CreateOrderResponse> CreateOrder(string ins, string side, int orderType,double px,double qty)

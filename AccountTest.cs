@@ -12,7 +12,7 @@ namespace Mexbt.Api
 			userId:     "<YOUR USER ID>"
 		);
 
-		private static Account account = new Account(authData, isSandbox: true);
+		private static Account account = new Account(authData);
 
 		[Test ()]
 		public void Test_ManageOrders ()
