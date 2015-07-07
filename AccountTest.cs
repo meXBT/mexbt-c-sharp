@@ -15,16 +15,28 @@ namespace Mexbt.Api
 		private static Account account = new Account(authData, isSandbox: true);
 
 		[Test ()]
-		public void TestCreateOrder ()
+		public void Test_ManageOrders ()
 		{
-			var createOrderResponse = account.CreateLimitOrder (
+			var cancelAllOrders = account.CancelAllOrders ("BTCUSD").Result;
+			TestUtils.AssertAccepted (cancelAllOrders);
+
+			var createOrder = account.CreateLimitOrder (
 				side: "buy",
 				ins: "BTCUSD",
 				qty: 1.0,
 				px: 342.99
 			).Result;
 
-			TestUtils.AssertAccepted (createOrderResponse);
+			TestUtils.AssertAccepted (createOrder);
+
+			var moveOrderToTop = account.MoveOrderToTop ("BTCUSD", createOrder.ServerOrderId).Result;
+			TestUtils.AssertAccepted (moveOrderToTop);
+
+			var executeOrderNow = account.ExecuteOrderNow ("BTCUSD", createOrder.ServerOrderId).Result;
+			TestUtils.AssertAccepted (executeOrderNow);
+
+			var cancelOrder = account.CancelOrder ("BTCUSD", createOrder.ServerOrderId).Result;
+			TestUtils.AssertAccepted (cancelOrder);
 		}
 
 		[Test ()]

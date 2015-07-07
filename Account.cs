@@ -140,8 +140,18 @@ namespace Mexbt.Api
 	internal class WithdrawRequest : PrivateRequest
 	{
 		[DataMember(Name = "sendToAddress")] public string SendToAddress { get; set; }
-		[DataMember(Name = "amount")]        public double Amount        { get; set; }
+		[DataMember(Name = "amount")]        public string Amount        { get; set; }
 		[DataMember(Name = "ins")]           public string Ins           { get; set; }
+
+		internal void formatProductionAmount(double amount)
+		{
+			Amount = amount.ToString ("0.00000000");
+		}
+
+		internal void formatSandboxAmount(double amount)
+		{
+			Amount = amount.ToString ("0.000000");
+		}
 	}
 
 	[DataContract]
@@ -381,7 +391,13 @@ namespace Mexbt.Api
 
 		public async Task<WithdrawResponse> Withdraw(string ins, string address, double amount)
 		{
-			var req = new WithdrawRequest { Ins = ins, SendToAddress = address, Amount = amount };
+			var req = new WithdrawRequest { Ins = ins, SendToAddress = address };
+
+			if (Credentials.IsSandbox) {
+				req.formatSandboxAmount (amount);
+			} else {
+				req.formatProductionAmount (amount);
+			}
 
 			return await PostPrivateRequest<WithdrawRequest, WithdrawResponse> ("withdraw", req);
 		}
