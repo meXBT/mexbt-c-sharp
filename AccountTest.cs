@@ -6,13 +6,11 @@ namespace Mexbt.Api
 	[TestFixture ()]
 	internal class AccountTest
 	{
-		private static AuthData authData = new AuthData(
+		private static Account account = new Account(
 			publicKey:  "<YOUR PUBLIC KEY>",
 			privateKey: "<YOUR PRIVATE KEY>",
-			userId:     "<YOUR USER ID>"
+			userId:     "<YOUR USER ID"
 		);
-
-		private static Account account = new Account(authData);
 
 		[Test ()]
 		public void Test_ManageOrders ()

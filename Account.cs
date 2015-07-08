@@ -6,7 +6,7 @@ using System;
 
 namespace Mexbt.Api
 {
-	public class AuthData
+	internal class AuthData
 	{
 		public string PrivateKey { get; }
 		public string PublicKey  { get; }
@@ -14,7 +14,7 @@ namespace Mexbt.Api
 
 		public bool IsSandbox { get; }
 
-		public AuthData(string publicKey, string privateKey, string userId, bool isSandbox = true)
+		public AuthData(string publicKey, string privateKey, string userId, bool isSandbox)
 		{
 			PrivateKey = privateKey;
 			PublicKey  = publicKey;
@@ -287,14 +287,18 @@ namespace Mexbt.Api
 		private static HttpClient SANDBOX_CLIENT = Common.getClient("https://private-api-sandbox.mexbt.com/v1/");
 		private static HttpClient PRIVATE_CLIENT = Common.getClient("https://private-api.mexbt.com/v1/");
 
-		public AuthData Credentials { get; }
+		public string PrivateKey { get { return credentials.PrivateKey; } }
+		public string PublicKey  { get { return credentials.PublicKey;  } }
+		public string UserId     { get { return credentials.UserId;     } }
+		public bool   IsSandbox  { get { return credentials.IsSandbox;  } }
 
+		private AuthData credentials { get; }
 		private HttpClient client;
 
-		public Account (AuthData authData)
+		public Account(string publicKey, string privateKey, string userId, bool isSandbox = true)
 		{
-			Credentials = authData;
-			client      = Credentials.IsSandbox ? SANDBOX_CLIENT : PRIVATE_CLIENT;
+			credentials = new AuthData (publicKey, privateKey, userId, isSandbox);
+			client      = isSandbox ? SANDBOX_CLIENT : PRIVATE_CLIENT;
 		}
 
 		public async Task<CreateOrderResponse> CreateOrder(string ins, string side, int orderType,double px,double qty)
@@ -390,7 +394,7 @@ namespace Mexbt.Api
 		{
 			var req = new WithdrawRequest { Ins = ins, SendToAddress = address };
 
-			if (Credentials.IsSandbox) {
+			if (credentials.IsSandbox) {
 				req.formatSandboxAmount (amount);
 			} else {
 				req.formatProductionAmount (amount);
@@ -403,7 +407,7 @@ namespace Mexbt.Api
 			where Req : PrivateRequest
 			where Res : MexbtResponse
 		{
-			req.Sign (Credentials);
+			req.Sign (credentials);
 			return await Common.PostRequest<Req, Res> (client, url, req);
 		}
 	}
