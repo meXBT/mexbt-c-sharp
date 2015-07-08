@@ -282,6 +282,14 @@ namespace Mexbt.Api
 		[DataMember(Name = "addresses")] public Address[] Addresses { get; set; }
 	}
 
+	[DataContract]
+	internal class DepositAdressByCurrencyRequest : PrivateRequest { }
+
+	public class DepositAdressByCurrencyResponse : MexbtResponse
+	{
+		public string Address { get; set; }
+	}
+
 	public class Account
 	{
 		private static HttpClient SANDBOX_CLIENT = Common.getClient("https://private-api-sandbox.mexbt.com/v1/");
@@ -388,6 +396,24 @@ namespace Mexbt.Api
 			var req = new DepositAdressesRequest ();
 
 			return await PostPrivateRequest<DepositAdressesRequest, DepositAddressesResponse> ("deposit-addresses",req);
+		}
+
+		public async Task<DepositAdressByCurrencyResponse> DepositAddressByCurrency(string currency)
+		{
+			var res = await DepositAddresses ();
+
+			if (res.IsAccepted) {
+				var address = Array.Find (res.Addresses, a => a.Name == currency);
+
+				if (address == null) {
+					throw new Exception ("Illegal currency: " + currency);
+				} else {
+					return new DepositAdressByCurrencyResponse { IsAccepted = true, Address = address.DepositAddress };
+				}
+			}
+			else {
+				return new DepositAdressByCurrencyResponse { IsAccepted = false, RejectReason = res.RejectReason };
+			}
 		}
 
 		public async Task<WithdrawResponse> Withdraw(string ins, string address, double amount)

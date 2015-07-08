@@ -9,7 +9,7 @@ namespace Mexbt.Api
 		private static Account account = new Account(
 			publicKey:  "<YOUR PUBLIC KEY>",
 			privateKey: "<YOUR PRIVATE KEY>",
-			userId:     "<YOUR USER ID"
+			userId:     "<YOUR USER ID>"
 		);
 
 		[Test ()]
@@ -70,6 +70,13 @@ namespace Mexbt.Api
 		{
 			var depositAddresses = account.DepositAddresses ().Result;
 			TestUtils.AssertAccepted (depositAddresses);
+		}
+
+		[Test ()]
+		public void TestDepositAddressByCurrency ()
+		{
+			var depositAddressByCurrency = account.DepositAddressByCurrency ("BTC").Result;
+			TestUtils.AssertAccepted (depositAddressByCurrency);
 		}
 
 		[Test ()]
