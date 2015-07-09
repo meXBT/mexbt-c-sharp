@@ -274,7 +274,7 @@ namespace Mexbt.Api
 	}
 
 	[DataContract]
-	internal class DepositAdressesRequest : PrivateRequest { }
+	internal class DepositAddressesRequest : PrivateRequest { }
 
 	[DataContract]
 	public class DepositAddressesResponse : MexbtResponse
@@ -283,9 +283,9 @@ namespace Mexbt.Api
 	}
 
 	[DataContract]
-	internal class DepositAdressByCurrencyRequest : PrivateRequest { }
+	internal class DepositAddressByCurrencyRequest : PrivateRequest { }
 
-	public class DepositAdressByCurrencyResponse : MexbtResponse
+	public class DepositAddressByCurrencyResponse : MexbtResponse
 	{
 		public string Address { get; set; }
 	}
@@ -393,12 +393,12 @@ namespace Mexbt.Api
 
 		public async Task<DepositAddressesResponse> DepositAddresses()
 		{
-			var req = new DepositAdressesRequest ();
+			var req = new DepositAddressesRequest ();
 
-			return await PostPrivateRequest<DepositAdressesRequest, DepositAddressesResponse> ("deposit-addresses",req);
+			return await PostPrivateRequest<DepositAddressesRequest, DepositAddressesResponse> ("deposit-addresses",req);
 		}
 
-		public async Task<DepositAdressByCurrencyResponse> DepositAddressByCurrency(string currency)
+		public async Task<DepositAddressByCurrencyResponse> DepositAddressByCurrency(string currency)
 		{
 			var res = await DepositAddresses ();
 
@@ -408,11 +408,11 @@ namespace Mexbt.Api
 				if (address == null) {
 					throw new Exception ("Illegal currency: " + currency);
 				} else {
-					return new DepositAdressByCurrencyResponse { IsAccepted = true, Address = address.DepositAddress };
+					return new DepositAddressByCurrencyResponse { IsAccepted = true, Address = address.DepositAddress };
 				}
 			}
 			else {
-				return new DepositAdressByCurrencyResponse { IsAccepted = false, RejectReason = res.RejectReason };
+				return new DepositAddressByCurrencyResponse { IsAccepted = false, RejectReason = res.RejectReason };
 			}
 		}
 
